@@ -173,6 +173,19 @@ fn prepareContext(getProcAddress: anytype) !void {
     errdefer gl.glad.unload();
     log.info("loaded OpenGL {}.{}", .{ major, minor });
 
+    const vendor_ptr = gl.glad.context.GetString.?(gl.c.GL_VENDOR);
+    const renderer_ptr = gl.glad.context.GetString.?(gl.c.GL_RENDERER);
+    const vendor = if (vendor_ptr != null) std.mem.sliceTo(vendor_ptr, 0) else "(unknown)";
+    const renderer = if (renderer_ptr != null) std.mem.sliceTo(renderer_ptr, 0) else "(unknown)";
+    log.info("GL vendor={s} renderer={s}", .{ vendor, renderer });
+    if (std.mem.indexOf(u8, renderer, "llvmpipe") != null or
+        std.mem.indexOf(u8, renderer, "softpipe") != null or
+        std.mem.eql(u8, renderer, "Software Rasterizer"))
+    {
+        log.warn("software OpenGL rendering detected; performance may be degraded. " ++
+            "Check GPU driver loading (LD_DEBUG=libs) if this is unexpected", .{});
+    }
+
     // Need to check version before trying to enable it
     if (major < MIN_VERSION_MAJOR or
         (major == MIN_VERSION_MAJOR and minor < MIN_VERSION_MINOR))

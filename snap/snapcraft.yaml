@@ -119,8 +119,35 @@ parts:
             libdrm-radeon1,
           ]
     stage:
+      # GLVND must retain default library lookup for host vendor drivers.
+      # Only the glvnd part supplies these dispatch libraries.
+      - -usr/lib/*/libEGL.so.*
+      - -usr/lib/*/libGL.so.*
+      - -usr/lib/*/libGLX.so.*
+      - -usr/lib/*/libGLdispatch.so.*
+      - -usr/lib/*/libOpenGL.so.*
       # The libraries in dri need no-patchelf, so they come from the mesa-unpatched part
       - -usr/lib/*/dri
+
+  glvnd:
+    plugin: nil
+    # Snapcraft's classic ELF patching sets DF_1_NODEFLIB. GLVND uses
+    # dlopen to load host vendor drivers, which need the host loader cache.
+    # Keep these dispatch libraries unpatched; the launcher supplies their
+    # bundled dependencies through LD_LIBRARY_PATH. Do not stage host drivers.
+    build-attributes: [no-patchelf]
+    stage-packages:
+      - libegl1
+      - libgl1
+      - libglx0
+      - libglvnd0
+      - libopengl0
+    stage:
+      - usr/lib/*/libEGL.so.*
+      - usr/lib/*/libGL.so.*
+      - usr/lib/*/libGLX.so.*
+      - usr/lib/*/libGLdispatch.so.*
+      - usr/lib/*/libOpenGL.so.*
 
   mesa:
     plugin: nil
@@ -135,6 +162,11 @@ parts:
     stage:
       # The libraries in dri need no-patchelf, so they come from the mesa-unpatched part
       - usr/lib/*/*.so*
+      - -usr/lib/*/libEGL.so.*
+      - -usr/lib/*/libGL.so.*
+      - -usr/lib/*/libGLX.so.*
+      - -usr/lib/*/libGLdispatch.so.*
+      - -usr/lib/*/libOpenGL.so.*
       - usr/lib/*/dri/libdril_dri.so
       - -usr/lib/*/libxml2.so.*
       - -usr/lib/*/libgallium*so

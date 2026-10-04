@@ -15,7 +15,7 @@ if [ -z "$XDG_DATA_HOME" ]; then
 fi
 
 if [ -f "$SNAP_USER_DATA/.last_revision" ]; then
-  if ! source "$SNAP_USER_DATA/.last_revision" 2>/dev/null; then
+  if ! . "$SNAP_USER_DATA/.last_revision" 2>/dev/null; then
     # file exist but sourcing it fails, so it's likely
     # not good anyway
     rm -f "$SNAP_USER_DATA/.last_revision"
@@ -42,7 +42,7 @@ export LD_LIBRARY_PATH=${SNAP}/usr/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/vdpau:${L
 export LIBGL_DRIVERS_PATH=${LIBGL_DRIVERS_PATH:+$LIBGL_DRIVERS_PATH:}${SNAP}/usr/lib/${ARCH}/dri/
 export LIBVA_DRIVERS_PATH=${LIBVA_DRIVERS_PATH:+$LIBVA_DRIVERS_PATH:}${SNAP}/usr/lib/${ARCH}/dri/
 export __EGL_VENDOR_LIBRARY_DIRS=${__EGL_VENDOR_LIBRARY_DIRS:+$__EGL_VENDOR_LIBRARY_DIRS:}/etc/glvnd/egl_vendor.d:/usr/share/glvnd/egl_vendor.d:${SNAP}/usr/share/glvnd/egl_vendor.d
-export __EGL_EXTERNAL_PLATFORM_CONFIG_DIRS=${__EGL_EXTERNAL_PLATFORM_CONFIG_DIRS:+$__EGL_EXTERNAL_PLATFORM_CONFIG_DIRS:}${SNAP}/usr/share/egl/egl_external_platform.d
+export __EGL_EXTERNAL_PLATFORM_CONFIG_DIRS=${__EGL_EXTERNAL_PLATFORM_CONFIG_DIRS:+$__EGL_EXTERNAL_PLATFORM_CONFIG_DIRS:}/etc/egl/egl_external_platform.d:/usr/share/egl/egl_external_platform.d:${SNAP}/usr/share/egl/egl_external_platform.d
 export DRIRC_CONFIGDIR=${SNAP}/usr/share/drirc.d
 export VK_LAYER_PATH=${VK_LAYER_PATH:+$VK_LAYER_PATH:}${SNAP}/usr/share/vulkan/implicit_layer.d/:${SNAP}/usr/share/vulkan/explicit_layer.d/
 export XDG_DATA_DIRS=${SNAP}/usr/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}
